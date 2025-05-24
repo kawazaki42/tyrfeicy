@@ -2,6 +2,7 @@
 // Обработка дат.
 unit Dates;
 
+// Режим Object Free Pascal, длинные строки
 {$mode ObjFPC}{$H+}
 
 interface
@@ -24,27 +25,63 @@ type
 
   // Динамический массив с предварительным выделением памяти
   TDateList = record
-    data: array of TDate;
-    reallength: integer;   // Количество хранимых элементов.
+    data: array of TDate;  // Динамический массив
+    reallength: integer;   // Фактическое число элементов
                            // Отличается от Length().
                            // Length(TDateList.data) - это количество выделенных ячеек
   end;
 
 
+const
+  // Инкремент выделения памяти
+  // Число ячеек, выделяемых за раз
+  AllocIncrement = 64;
+
+
+// Получить название месяца
 function MonthToStr(m: TMonth): String;
-procedure StoreDates(fname: string; dates: TDateList);
-function LoadDates(fname: string): TDateList;
+
+// Получить индекс самой поздней даты в массиве
 function ArgMax(const dates: TDateList): integer;
+
+// Выделить новые ячейки в массиве, если он заполнен.
+//
+// т. е. если кол-во элементов массива равно
+// кол-ву выделенных ячеек памяти.
 procedure MaybeIncSize(var list: TDateList);
+// Добавить запись в массив
+procedure AddDateToList(var date: TDate; var list: TDateList);
+
+// Сохранить массив дат в файл
+procedure StoreDates(fname: string; dates: TDateList);
+// Получить массив дат из файла
+function LoadDates(fname: string): TDateList;
 
 implementation
 
+
+// Выделить новые ячейки в массиве, если он заполнен.
+//
+// т. е. если кол-во элементов массива равно
+// кол-ву выделенных ячеек памяти.
 procedure MaybeIncSize(var list: TDateList);
 begin
   if list.reallength = length(list.data) then
-    setlength(list.data, list.reallength + 64);
+    // SetLength выделяет память
+    setlength(list.data, list.reallength + AllocIncrement);
 end;
 
+
+// Добавить запись в массив
+procedure AddDateToList(var date: TDate; var list: TDateList);
+begin
+  inc(list.reallength);  // Увеличить число хранимых элементов
+  MaybeIncSize(list);  // Выделить память, если необходимо
+  list.data[list.reallength-1] := date;  // Вставить запись в конец
+end;
+
+
+// Получить название месяца
 function MonthToStr(m: TMonth): String;
 begin
   case m of
@@ -60,10 +97,13 @@ begin
     Oct: result := 'октябрь';
     Nov: result := 'ноябрь';
     Dec: result := 'декабрь';
+    // Ошибка: неправильный месяц. Используем номер.
     else result := IntToStr( ord(m) );
   end;
 end;
 
+
+// Получить месяц по названию
 function StrToMonth(s: string): TMonth;
 begin
   case s of
@@ -83,66 +123,100 @@ begin
 end;
 
 
+// Сохранить массив дат в файл
 procedure StoreDates(fname: string; dates: TDateList);
 var
-  f: file of TDate;
-  i: integer;
+  f: file of TDate;  // Типизированный файл дат
+  i: integer;  // Итератор цикла
 begin
-  assign(f, fname);
-  rewrite(f);
+  AssignFile(f, fname);  // Присвоить имя
+  Rewrite(f);  // Открыть для перезаписи
   try
-    //write(f,
+    // Записать все даты из массива
     for i := 0 to dates.reallength-1 do
       write(f, dates.data[i]); // Напр. диск полон
-  finally
-    close(f);  // Для flush!
+  finally  // Вызывается при ошибке (напр. диск полон)
+           // и при нормальной работе (напр. для синхронизации
+           // внутреннего буфера файловой системы, aka Flush)
+    CloseFile(f);
   end;
 end;
 
+
+// Получить массив дат из файла
 function LoadDates(fname: string): TDateList;
 var
-  f: file of TDate;
+  f: file of TDate;  // Типизированный файл дат
 begin
-  assign(f, fname);
-  reset(f);
+  AssignFile(f, fname);  // Присвоить имя
+  Reset(f);  // Открыть для чтения
   try
-    //size := 0;
-    setlength(result.data, 64);
-    result.reallength := 0;
-    while not eof(f) do
+    //result := TDateList.Create;
+    //result.data.Create;
+    SetLength(result.data, AllocIncrement);  // Выделить память
+    result.reallength := 0;  // Инициализировать счетчик
+    while not eof(f) do  // Пока в файле не кончились данные
     begin
+      // Считать из файла элемент в конец массива
       read(f, result.data[result.reallength]);
-      inc(result.reallength);
-      MaybeIncSize(result);
+      inc(result.reallength);  // увеличить счетчик фактических элементов
+      MaybeIncSize(result);  // выделить память, если необходимо
     end;
   finally
-    close(f);
+    // Вызывается при ошибке (напр. диск полон)
+    // и при нормальной работе (напр. для синхронизации
+    // внутреннего буфера файловой системы, aka Flush)
+    CloseFile(f);
   end;
 end;
 
 
+// Получить индекс самой поздней даты в массиве
 function ArgMax(const dates: TDateList): integer;
 var
-  i: integer;
+  i: integer;  // Итератор цикла
 begin
-  argmax := 0;
+  argmax := 0;  // По умолчанию, первый элемент
+
+  // Для каждого элемента массива
   for i := 0 to dates.reallength-1 do
   begin
-    if dates.data[i].year < dates.data[argmax].year then continue;
-    if dates.data[i].year > dates.data[argmax].year then
-    begin
-      argmax := i;
-      continue;
-    end;
-    if dates.data[i].month < dates.data[argmax].month then continue;
-    if dates.data[i].month > dates.data[argmax].month then
-    begin
-      argmax := i;
-      continue;
-    end;
-    if dates.data[i].day <= dates.data[argmax].day then continue;
+    if dates.data[i].year < dates.data[argmax].year then
+      // dates[i] меньше argmax (по году)
+      continue;  // пропускаем
 
+    if dates.data[i].year > dates.data[argmax].year then
+    // dates[i] больше argmax (по году)
+    begin
+      argmax := i;  // обновляем временный показатель
+      continue;  // проверяем следующую дату
+    end;
+
+    // dates[i] и argmax равны по году
+    // Проверяем дальше
+
+    if dates.data[i].month < dates.data[argmax].month then
+      // dates[i] меньше argmax (по месяцу)
+      continue;  // пропускаем
+
+    if dates.data[i].month > dates.data[argmax].month then
+    // dates[i] больше argmax (по месяцу)
+    begin
+      argmax := i;  // обновляем временный показатель
+      continue;  // проверяем следующую дату
+    end;
+
+    // dates[i] и argmax равны по месяцу (и году)
+    // Проверяем дальше
+
+    if dates.data[i].day <= dates.data[argmax].day then
+      // dates[i] меньше или равен argmax
+      continue;
+
+    // dates[i] строго больше argmax
+    // обновляем временный показатель
     argmax := i;
+    // проверяем следующую дату
   end;
 end;
 

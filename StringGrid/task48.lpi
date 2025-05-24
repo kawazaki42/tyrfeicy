@@ -35,17 +35,15 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="mainwindow.pas"/>
+        <Filename Value="MainWindow.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainWindowForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="MainWindow"/>
       </Unit>
       <Unit>
-        <Filename Value="dates.pas"/>
+        <Filename Value="Dates.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Dates"/>
       </Unit>
     </Units>
   </ProjectOptions>

@@ -1,16 +1,17 @@
 object MainWindowForm: TMainWindowForm
-  Left = 1187
+  Left = 569
   Height = 320
-  Top = 182
+  Top = 172
   Width = 320
+  AutoSize = True
   Caption = 'Задача 48'#13#10
-  ClientHeight = 300
+  ClientHeight = 320
   ClientWidth = 320
   Constraints.MinHeight = 240
   Constraints.MinWidth = 320
   Menu = MainMenu
   OnCreate = FormCreate
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '3.8.0.0'
   object StringGrid: TStringGrid
     Left = 8
     Height = 184
@@ -78,17 +79,17 @@ object MainWindowForm: TMainWindowForm
     Top = 216
     Width = 104
     Caption = 'Добавить'
-    OnClick = ButtonAddClick
     TabOrder = 4
+    OnClick = ButtonAddClick
   end
-  object ButtonAdd1: TButton
+  object ButtonFind: TButton
     Left = 152
     Height = 23
     Top = 248
     Width = 163
     Caption = 'Найти самую позднюю дату'
-    OnClick = ButtonAdd1Click
     TabOrder = 5
+    OnClick = ButtonFindClick
   end
   object ActionList: TActionList
     Left = 136
