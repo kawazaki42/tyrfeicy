@@ -42,16 +42,21 @@ type
 
     // Обработать создание экземпляра класса формы.
     // Инициализирует переменные.
+    // Sender - отправитель события
     procedure FormCreate(Sender: TObject);
 
     // Обработать выбор файла при открытии
+    // Sender - отправитель события
     procedure ActionFileOpenAccept(Sender: TObject);
     // Обработать выбор файла при сохранении
+    // Sender - отправитель события
     procedure ActionFileSaveAccept(Sender: TObject);
 
     // Обработать клик по кнопке "Найти"
+    // Sender - отправитель события
     procedure ButtonFindClick(Sender: TObject);
     // Обработать клик по кнопке "Добавить"
+    // Sender - отправитель события
     procedure ButtonAddClick(Sender: TObject);
   private
 
@@ -73,6 +78,7 @@ var
 
 // Обработать создание экземпляра класса формы.
 // Инициализирует переменные.
+// Sender - отправитель события
 procedure TMainWindowForm.FormCreate(Sender: TObject);
 begin
   // Заранее выделить память для массива
@@ -129,6 +135,7 @@ end;
 
 
 // Обработать клик по кнопке "Добавить"
+// Sender - отправитель события
 procedure TMainWindowForm.ButtonAddClick(Sender: TObject);
 var
   d: TDate;
@@ -148,6 +155,7 @@ end;
 
 // Обработать клик по кнопке "Найти"
 // Выделить строку с самой поздней датой
+// Sender - отправитель события
 procedure TMainWindowForm.ButtonFindClick(Sender: TObject);
 begin
   // +1 из-за нулевой строки - заголовка таблицы
@@ -156,6 +164,7 @@ end;
 
 
 // Обработать выбор файла при открытии
+// Sender - отправитель события
 procedure TMainWindowForm.ActionFileOpenAccept(Sender: TObject);
 begin
   // Загрузить данные из файла в массив storage
@@ -167,6 +176,7 @@ end;
 
 
 // Обработать выбор файла при сохранении
+// Sender - отправитель события
 procedure TMainWindowForm.ActionFileSaveAccept(Sender: TObject);
 begin
   // Сохранить данный из массива в файл

@@ -38,23 +38,27 @@ const
   AllocIncrement = 64;
 
 
-// Получить название месяца
+// Получить название месяца.
+// m - значение из перечисления TMonth
 function MonthToStr(m: TMonth): String;
 
 // Получить индекс самой поздней даты в массиве
+// dates - массив дат (TDateList)
 function ArgMax(const dates: TDateList): integer;
 
 // Выделить новые ячейки в массиве, если он заполнен.
 //
 // т. е. если кол-во элементов массива равно
 // кол-ву выделенных ячеек памяти.
+//
+// list - массив дат (TDateList)
 procedure MaybeIncSize(var list: TDateList);
-// Добавить запись в массив
+// Добавить запись date (TDate) в массив list (TDateList)
 procedure AddDateToList(var date: TDate; var list: TDateList);
 
-// Сохранить массив дат в файл
+// Сохранить массив дат dates (TDateList) в файл с именем fname
 procedure StoreDates(fname: string; dates: TDateList);
-// Получить массив дат из файла
+// Получить массив дат (TDateList) из файла с именем fname
 function LoadDates(fname: string): TDateList;
 
 implementation
@@ -64,6 +68,8 @@ implementation
 //
 // т. е. если кол-во элементов массива равно
 // кол-ву выделенных ячеек памяти.
+//
+// list - массив дат (TDateList)
 procedure MaybeIncSize(var list: TDateList);
 begin
   if list.reallength = length(list.data) then
@@ -72,7 +78,7 @@ begin
 end;
 
 
-// Добавить запись в массив
+// Добавить запись date (TDate) в массив list (TDateList)
 procedure AddDateToList(var date: TDate; var list: TDateList);
 begin
   inc(list.reallength);  // Увеличить число хранимых элементов
@@ -81,7 +87,8 @@ begin
 end;
 
 
-// Получить название месяца
+// Получить название месяца.
+// m - значение из перечисления TMonth
 function MonthToStr(m: TMonth): String;
 begin
   case m of
@@ -103,7 +110,7 @@ begin
 end;
 
 
-// Получить месяц по названию
+// Получить месяц (TMonth) по его названию s (String)
 function StrToMonth(s: string): TMonth;
 begin
   case s of
@@ -123,7 +130,7 @@ begin
 end;
 
 
-// Сохранить массив дат в файл
+// Сохранить массив дат dates (TDateList) в файл с именем fname
 procedure StoreDates(fname: string; dates: TDateList);
 var
   f: file of TDate;  // Типизированный файл дат
@@ -143,7 +150,7 @@ begin
 end;
 
 
-// Получить массив дат из файла
+// Получить массив дат (TDateList) из файла с именем fname
 function LoadDates(fname: string): TDateList;
 var
   f: file of TDate;  // Типизированный файл дат
@@ -172,6 +179,7 @@ end;
 
 
 // Получить индекс самой поздней даты в массиве
+// dates - массив дат (TDateList)
 function ArgMax(const dates: TDateList): integer;
 var
   i: integer;  // Итератор цикла
