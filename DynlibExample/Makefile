@@ -8,5 +8,7 @@ run: main
 %: %.c libmy.so
 	$(CC) -L. -lmy $< -o $@
 
+libmy.so: my.pas
+
 lib%.so: %.pas
 	$(PC) $<
