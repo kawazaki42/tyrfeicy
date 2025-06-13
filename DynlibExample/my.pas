@@ -1,19 +1,18 @@
 library my;
 
-{ function add_numbers(a, b: Integer): Integer; }
-
 function add_numbers(a, b: Integer): Integer;
 begin
   add_numbers := a + b;
 end;
 
 
-{ procedure print_message(const message: PChar); }
-{ { cdecl; } }
-{ begin }
-{   writeln('Message: ', message); }
-{ end; }
+procedure print_message(const message: PChar);
+{ cdecl; }
+begin
+  writeln('Message: ', message);
+end;
 
+{
 procedure print_message(const message: array of Char);
 var
   c: Char;
@@ -31,6 +30,7 @@ begin
 
   writeln;
 end;
+}
 
 exports
   add_numbers, print_message;
