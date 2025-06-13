@@ -7,7 +7,7 @@ end;
 
 
 procedure print_message(const message: PChar);
-{ cdecl; }
+cdecl;
 begin
   writeln('Message: ', message);
 end;
@@ -16,7 +16,7 @@ end;
 procedure print_message(const message: array of Char);
 var
   c: Char;
-{ cdecl; }
+cdecl;
 begin
   write('Message: ');
   
